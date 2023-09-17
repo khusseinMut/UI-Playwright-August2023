@@ -1,25 +1,25 @@
-const { test, expect } = require('@playwright/test');
+import {test, expect} from '../common/test'
 
 test.describe('Authentication & Authorization', () => {
-    test.beforeEach(async ({page})=> {
-        await page.goto('https://coding.pasv.us/user/login')
-    })
 
-    test('Sigh in with existing credentials', async ({page}) => {
-        await page.locator('#normal_login_email').fill('kmutsolgov@gmail.com')
-        await page.locator('#normal_login_password').fill('eAvevMhHwzuHgZ9')
-        await page.locator('button[type="submit"]').click()
+  test.beforeEach(async ({loginPage}) => {
+    // await page.goto('/user/login')
+    await loginPage.open()
+  })
 
-        await expect(page.locator('.ant-avatar-square')).toBeVisible()
-    })
-    test('Sigh in with wrong email', async ({page}) => {
-        await page.locator('#normal_login_email').fill('test@gmail.com')
-        await page.locator('#normal_login_password').fill('eAvevMhHwzuHgZ9')
-        await page.locator('button[type="submit"]').click()
+  test('Sigh in with existing credentials', async ({page, loginPage}) => {
+    await loginPage.inputEmail.fill('kmutsolgov@gmail.com')
+    await loginPage.inputPassword.fill('eAvevMhHwzuHgZ9')
+    await loginPage.buttonSubmit.click()
 
-        const toast= page.locator('.ant-notification-notice-message')
+    await expect(page.locator('.ant-avatar-square')).toBeVisible()
+  })
+  test('Sigh in with wrong email', async ({loginPage}) => {
+    await loginPage.inputEmail.fill('test@gmail.com')
+    await loginPage.inputPassword.fill('eAvevMhHwzuHgZ9')
+    await loginPage.buttonSubmit.click()
 
-        await expect(toast).toBeVisible()
-        await expect(toast).toHaveText('User login. Fail')
-    })
+    await expect(loginPage.toast).toBeVisible()
+    await expect(loginPage.toast).toHaveText('User login. Fail')
+  })
 })
